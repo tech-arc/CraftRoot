@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RE-TEX | Marketplace</title>  
+  <link rel="stylesheet" href="refashioned.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script>
+      tailwind.config = {
+          theme: {
+              extend: {
+                  fontFamily: { sans: ['"Inter"', 'sans-serif'] },
+                  colors: {
+                      brand: { 
+                            50: '#f0fdfa', 
+                            100: '#ccfbf1', 
+                            200: '#99f6e4', 
+                            500: '#14b8a6', // Base Teal 
+                            600: '#0d9488', // Darker Teal 
+                            700: '#0f766e', 
+                            900: '#134e4a' 
+                        }
+                  }
+              }
+          }
+      }
+  </script>
+  <style>
+    /* Add padding to the top of the body to prevent the fixed nav from overlapping content */
+    body {
+        padding-top: 120px; /* Adjust this value based on the final height of your nav */
+    }
+    @media (min-width: 640px) {
+        body {
+            padding-top: 100px;
+        }
+    }
+
+    .glass-nav { 
+        background: rgba(255, 255, 255, 0.85); 
+        backdrop-filter: blur(16px); 
+        -webkit-backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(230, 230, 230, 0.7);
+    }
+
+    .dropdown-anim {
+        transform-origin: top right;
+        transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+    }
+    .dropdown-hidden {
+        transform: scale(0.95);
+        opacity: 0;
+        pointer-events: none;
+    }
+    .dropdown-visible {
+        transform: scale(1);
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans antialiased overflow-x-hidden">
+
+    <nav class="fixed top-0 left-0 w-full z-50 glass-nav shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                
+                <div class="flex items-center gap-4">
+                    <button id="mobile-menu-btn" class="md:hidden text-gray-600 hover:text-brand-600 focus:outline-none p-2">
+                        <i id="menu-icon" class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <a href="index.html" class="flex items-center gap-2">
+                        <div class="bg-brand-500 text-white p-1.5 rounded-md flex items-center justify-center">
+                            <i class="fa-solid fa-recycle text-sm"></i>
+                        </div>
+                        <span class="text-xl font-bold tracking-tight hidden sm:block">RE-TEX</span>
+                    </a>
+                </div>
+  
+                <div class="hidden sm:flex flex-1 max-w-md mx-8 relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" placeholder="Search for items, brands, or styles..." class="w-full bg-gray-100 border-none rounded-full py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-brand-500 outline-none transition">
+                </div>
+  
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <a href="wishlist.html" class="relative p-2 text-gray-600 hover:text-brand-600 transition hover:bg-brand-50 rounded-full">
+                        <i class="fa-solid fa-heart text-lg"></i>
+                        <span id="wishlistBadge" class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white" style="display: none;">0</span>
+                    </a>
+                    <a href="cart.html" class="relative p-2 text-gray-600 hover:text-brand-600 transition hover:bg-brand-50 rounded-full">
+                        <i class="fa-solid fa-cart-shopping text-lg"></i>
+                        <span id="cartBadge" class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-white" style="display: none;">0</span>
+                    </a>
+        
+                    <div class="relative ml-2">
+                        <button id="loginBtn" onclick="window.location.href='reglogin.html'" class="bg-gray-900 text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-full text-sm font-semibold hover:bg-gray-800 transition shadow-md whitespace-nowrap">
+                            Log in
+                        </button>
+                        <button id="profileBtn" class="hidden w-10 h-10 rounded-full bg-brand-100 border-2 border-brand-500 text-brand-700 font-bold flex items-center justify-center hover:shadow-md transition overflow-hidden">
+                            <img src="https://api.dicebear.com/7.x/initials/svg?seed=User&backgroundColor=14b8a6" alt="Profile" class="w-full h-full object-cover">
+                        </button>
+                        <div id="profileDropdown" class="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-xl border border-gray-100 dropdown-anim dropdown-hidden z-50 overflow-hidden">
+                            <div class="px-4 py-3 bg-gray-50 border-b border-gray-100">
+                                <p class="text-sm font-bold text-gray-900">Welcome back!</p>
+                                <p class="text-xs text-gray-500 truncate" id="profileEmailDisplay">user@retex.com</p>
+                            </div>
+                            <div class="py-1">
+                                <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-600 transition"><i class="fa-solid fa-box-open w-4"></i> My Orders</a>
+                                <a href="#" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-600 transition"><i class="fa-solid fa-location-dot w-4"></i> Saved Addresses</a>
+                                <a href="wishlist.html" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-brand-50 hover:text-brand-600 transition"><i class="fa-solid fa-heart w-4"></i> Wishlist</a>
+                            </div>
+                            <div class="border-t border-gray-100"></div>
+                            <div class="py-1">
+                                <button id="logoutBtn" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition text-left"><i class="fa-solid fa-arrow-right-from-bracket w-4"></i> Log out</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sm:hidden pb-4 px-2">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" placeholder="Search marketplace..." class="w-full bg-gray-100 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-brand-500 outline-none">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="mobile-menu" class="fixed inset-0 bg-white/95 backdrop-blur-xl z-40 hidden flex-col items-center justify-center space-y-8 pt-20 transition-opacity">
+        <a href="index.html" class="mobile-link text-2xl font-bold text-gray-900 hover:text-brand-600">Home</a>
+        <a href="refaishioned.html" class="mobile-link text-2xl font-bold text-gray-900 hover:text-brand-600">Shop</a>
+        <a href="cart.html" class="mobile-link text-2xl font-bold text-gray-900 hover:text-brand-600">Cart</a>
+        <a href="wishlist.html" class="mobile-link text-2xl font-bold text-gray-900 hover:text-brand-600">Wishlist</a>
+        <a href="reglogin.html" id="mobileLoginLink" class="mobile-link mt-8 bg-gray-900 text-white px-10 py-4 rounded-full text-xl font-bold shadow-xl">Log In</a>
+    </div>
+
+  <div class="container mx-auto px-4 mt-4">
+    
+    <div class="text-center mb-8">
+      <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900">Refashioned Marketplace</h1>
+      <p class="text-lg text-gray-500 mt-2">Browse quality refashioned clothing from various retailers</p>
+    </div>
+
+    <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 md:p-6 mb-8 flex flex-col md:flex-row items-center gap-4 shadow-sm">
+      <div class="bg-white rounded-full w-12 h-12 flex items-center justify-center flex-shrink-0 shadow-sm text-blue-600">
+        <i class="fa-solid fa-tags text-xl"></i>
+      </div>
+      <div class="flex-1 text-center md:text-left text-gray-700 text-sm md:text-base">
+        <strong class="text-gray-900 block md:inline">Earn More Discounts!</strong> 
+        Donate high-quality clothes and receive exclusive discounts for your new purchases. Better quality = bigger discounts!
+      </div>
+      <a href="#" class="bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition whitespace-nowrap shadow-md">
+        View Offers <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
+      </a>
+    </div>
+
+    <section id="marketplace" class="bg-transparent py-4">
+      <div class="max-w-7xl mx-auto">
+          
+          <div class="flex justify-center mb-8">
+              <div class="flex gap-2 bg-white p-1.5 rounded-full overflow-x-auto no-scrollbar shadow-sm border border-gray-100">
+                  <button class="filter-btn active whitespace-nowrap px-6 py-2 rounded-full text-sm font-bold transition bg-gray-900 text-white shadow-sm" data-filter="all">All Items</button>
+                  <button class="filter-btn whitespace-nowrap px-6 py-2 rounded-full text-sm font-bold transition text-gray-500 hover:text-gray-900 hover:bg-gray-100" data-filter="Cotton">Cotton</button>
+                  <button class="filter-btn whitespace-nowrap px-6 py-2 rounded-full text-sm font-bold transition text-gray-500 hover:text-gray-900 hover:bg-gray-100" data-filter="Denim">Denim</button>
+                  <button class="filter-btn whitespace-nowrap px-6 py-2 rounded-full text-sm font-bold transition text-gray-500 hover:text-gray-900 hover:bg-gray-100" data-filter="Synthetic">Synthetic</button>
+              </div>
+          </div>
+
+          <div id="listings-grid" class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+          </div>
+
+          <div class="mt-12 text-center">
+              <button class="border-2 border-gray-900 text-gray-900 px-8 py-3 rounded-full font-bold hover:bg-gray-900 hover:text-white transition shadow-sm">Load More Products</button>
+          </div>
+      </div>
+    </section>
+
+  </div>
+  
+  <footer class="bg-gray-900 text-gray-300 pt-16 pb-8 mt-16 border-t-4 border-brand-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1">
+                    <a href="#" class="mb-6 inline-flex items-center gap-3">
+                        <div class="bg-brand-500 text-white p-2 rounded-lg flex items-center justify-center"><i class="fa-solid fa-recycle"></i></div>
+                        <span class="text-2xl font-bold text-white tracking-tight">RE-TEX</span>
+                    </a>
+                    <p class="text-sm text-gray-400 leading-relaxed">Revolutionizing textile waste management through technology and community empowerment. Join the circular fashion movement.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4 uppercase tracking-wider text-sm">Marketplace</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="#" class="hover:text-brand-500 transition">Shop Refashioned</a></li>
+                        <li><a href="#" class="hover:text-brand-500 transition">Donation Hub</a></li>
+                        <li><a href="#" class="hover:text-brand-500 transition">Pricing & Rewards</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4 uppercase tracking-wider text-sm">Company</h4>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="#about" class="hover:text-brand-500 transition">Our Mission</a></li>
+                        <li><a href="#contact" class="hover:text-brand-500 transition">Contact Support</a></li>
+                        <li><a href="#" class="hover:text-brand-500 transition">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-4 uppercase tracking-wider text-sm">Stay Updated</h4>
+                    <p class="text-sm text-gray-400 mb-3">Get exclusive offers on refashioned drops.</p>
+                    <div class="flex gap-2">
+                        <input type="email" placeholder="Email Address" class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-sm w-full focus:ring-2 focus:ring-brand-500 outline-none text-white">
+                        <button class="bg-brand-500 px-4 py-2.5 rounded-lg text-white text-sm font-bold hover:bg-brand-600 transition shadow-lg">Join</button>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-center text-sm text-gray-500 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p>&copy; 2026 RE-TEX. All rights reserved.</p>
+                <div class="flex gap-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-instagram text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-twitter text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-linkedin text-xl"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+  
+  <!-- Global Managers -->
+  <script src="cart-manager.js"></script>
+  <script src="wishlist-manager.js"></script>
+
+  <script>
+    // --- PRODUCT RENDER LOGIC ---
+    const listings = [
+        { id: 1, title: "Patchwork Vintage Jeans", category: "Denim", price: "₹1200", originalPrice: "₹1500", hasDiscount: true, img: "https://i.pinimg.com/1200x/50/77/5d/50775ddd9b6b144bdad799f90aa33f42.jpg" },
+        { id: 2, title: "Blue Denim Raw Scraps", category: "Denim", price: "₹600", originalPrice: null, hasDiscount: false, img: "https://i.pinimg.com/1200x/a9/0e/30/a90e30389a8479abdd575bc792dda1ab.jpg" },
+        { id: 3, title: "Synthetic Fabric Art Mix", category: "Synthetic", price: "₹1200", originalPrice: "₹1600", hasDiscount: true, img: "https://i.pinimg.com/1200x/2c/b0/b5/2cb0b52ceda391fd75a728ac69f9cff2.jpg" },
+        { id: 4, title: "Reclaimed Wool Carpet", category: "Wool", price: "₹300", originalPrice: null, hasDiscount: false, img: "https://i.pinimg.com/1200x/9f/51/d5/9f51d54d1f1d62848ffc7c7eb77b21eb.jpg" },
+        { id: 5, title: "Eco Cotton Tote Bag", category: "Cotton", price: "₹700", originalPrice: "₹1500", hasDiscount: true, img: "https://i.pinimg.com/1200x/7a/aa/67/7aaa67dd4875807d3e11229930995ab0.jpg" },
+        { id: 6, title: "Upcycled Zip Jacket", category: "Synthetic", price: "₹720", originalPrice: "₹4000", hasDiscount: false, img: "https://images.asket.com/pim-images/1755181789-asket_zjt-ma-dkn_thumbnail.jpg?auto=format&q=80&w=1024" }
+    ];
+
+    const grid = document.getElementById('listings-grid');
+    const btns = document.querySelectorAll('.filter-btn');
+
+    function render(filter = 'all') {
+        if(!grid) return;
+        grid.innerHTML = '';
+        const filtered = filter === 'all' ? listings : listings.filter(i => i.category === filter);
+        
+        filtered.forEach(item => {
+            let priceHtml = item.hasDiscount 
+                ? `<div class="flex flex-col items-start"><span class="text-xs text-gray-400 line-through">${item.originalPrice}</span><span class="font-bold text-lg text-brand-600">${item.price}</span></div>`
+                : `<span class="font-bold text-lg text-gray-900">${item.price}</span>`;
+
+            const cardContent = `
+                <div class="h-48 md:h-64 overflow-hidden relative">
+                    <img src="${item.img}" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                    <div class="absolute top-3 left-3 bg-white/90 backdrop-blur text-xs font-bold px-2 py-1 rounded text-gray-800 uppercase tracking-wide">${item.category}</div>
+                    ${item.hasDiscount ? '<div class="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded shadow-lg uppercase tracking-wide">Sale</div>' : ''}
+                </div>
+                <div class="p-5 flex flex-col flex-grow justify-between bg-white">
+                    <div>
+                        <h3 class="font-bold text-gray-900 text-sm md:text-base mb-1 group-hover:text-brand-600 transition line-clamp-2">${item.title}</h3>
+                        <p class="text-xs text-gray-400 mb-3"><i class="fa-solid fa-leaf text-brand-500 mr-1"></i> Sustainable Choice</p>
+                    </div>
+                    <div class="flex justify-between items-end pt-3 border-t border-gray-100">
+                        ${priceHtml}
+                        <button class="bg-gray-100 text-gray-900 w-10 h-10 rounded-full flex items-center justify-center group-hover:bg-brand-500 group-hover:text-white transition-all transform group-hover:rotate-[-45deg] flex-shrink-0 shadow-sm">
+                            <i class="fa-solid fa-arrow-right text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            let el = document.createElement('a');
+            el.className = 'product-card-link group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl hover:border-brand-200 transition-all duration-300 flex flex-col h-full transform hover:-translate-y-1';
+            el.href = `prodetails${item.id}.html`;
+            el.innerHTML = cardContent;
+            grid.appendChild(el);
+        });
+    }
+
+    btns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            btns.forEach(b => {
+                b.classList.remove('bg-gray-900', 'text-white', 'shadow-sm');
+                b.classList.add('text-gray-500', 'bg-transparent');
+            });
+            btn.classList.remove('text-gray-500', 'bg-transparent');
+            btn.classList.add('bg-gray-900', 'text-white', 'shadow-sm');
+            render(btn.dataset.filter);
+        });
+    });
+
+    render();
+
+    // --- NEW: HEADER, AUTH & MOBILE MENU LOGIC ---
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Mobile Menu ---
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+        let isMenuOpen = false;
+
+        mobileMenuBtn.addEventListener('click', () => {
+            isMenuOpen = !isMenuOpen;
+            if (isMenuOpen) {
+                mobileMenu.classList.remove('hidden');
+                mobileMenu.classList.add('flex');
+                setTimeout(() => mobileMenu.classList.add('opacity-100'), 10);
+                menuIcon.classList.remove('fa-bars'); menuIcon.classList.add('fa-xmark');
+            } else {
+                mobileMenu.classList.remove('opacity-100');
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                    mobileMenu.classList.remove('flex');
+                }, 300);
+                menuIcon.classList.remove('fa-xmark'); menuIcon.classList.add('fa-bars');
+            }
+        });
+        document.querySelectorAll('.mobile-link').forEach(link => link.addEventListener('click', () => {
+            if(isMenuOpen) mobileMenuBtn.click();
+        }));
+
+        // --- Auth UI Logic ---
+        const loginBtn = document.getElementById('loginBtn');
+        const profileBtn = document.getElementById('profileBtn');
+        const profileDropdown = document.getElementById('profileDropdown');
+        const profileEmailDisplay = document.getElementById('profileEmailDisplay');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const mobileLoginLink = document.getElementById('mobileLoginLink');
+        let isLoggedIn = false;
+
+        function updateLoginUI() {
+            const user = JSON.parse(localStorage.getItem('loggedInUser'));
+            if (user && user.email) {
+                isLoggedIn = true;
+                loginBtn.classList.add('hidden');
+                profileBtn.classList.remove('hidden');
+                profileEmailDisplay.textContent = user.email;
+                profileBtn.querySelector('img').src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(user.username || user.email)}&backgroundColor=14b8a6`;
+                mobileLoginLink.textContent = "Log Out";
+                mobileLoginLink.href = "#";
+                mobileLoginLink.onclick = (e) => { e.preventDefault(); performLogout(); };
+            } else {
+                isLoggedIn = false;
+                loginBtn.classList.remove('hidden');
+                profileBtn.classList.add('hidden');
+                profileDropdown.classList.remove('dropdown-visible');
+                profileDropdown.classList.add('dropdown-hidden');
+                mobileLoginLink.textContent = "Log In";
+                mobileLoginLink.href = "reglogin.html";
+                mobileLoginLink.onclick = null;
+            }
+            if (window.cartManager) window.cartManager.updateAllBadges();
+            if (window.wishlistManager) window.wishlistManager.updateBadge();
+        }
+
+        function performLogout() {
+            localStorage.removeItem('loggedInUser');
+            isLoggedIn = false;
+            updateLoginUI();
+            window.location.reload();
+        }
+
+        profileBtn.addEventListener('click', (e) => { e.stopPropagation(); profileDropdown.classList.toggle('dropdown-hidden'); profileDropdown.classList.toggle('dropdown-visible'); });
+        document.addEventListener('click', (e) => { if (isLoggedIn && !profileBtn.contains(e.target) && !profileDropdown.contains(e.target)) { profileDropdown.classList.add('dropdown-hidden'); profileDropdown.classList.remove('dropdown-visible'); } });
+        logoutBtn.addEventListener('click', performLogout);
+
+        updateLoginUI();
+    });
+  </script>
+</body>
+</html>
